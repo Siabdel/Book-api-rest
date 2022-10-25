@@ -11,15 +11,19 @@ class BookSerializer(serializers.ModelSerializer):
         model  = api_models.Book
         
 class AuteurSerializer(serializers.ModelSerializer):
-    
     class Meta:
         fields = '__all__'
         model = api_models.Author
         
 class CategorieSerializer(serializers.ModelSerializer):
-    
     class Meta:
         fields = '__all__'
         model = api_models.Category
+        
+        
+class BlogSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields = '__all__'
+        model = api_models.Blog
         
         

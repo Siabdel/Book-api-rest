@@ -7,6 +7,7 @@ __author__ = 'Abdelaziz Sadquaoui'
 __copyright__ = 'Copyright (c) 2022 AtlassV'
 __version__ = '0.9'
 
+from tkinter import CASCADE
 from unittest.util import _MAX_LENGTH
 from django.db import models
 from django.contrib.auth.models import User, Group, Permission
@@ -47,7 +48,7 @@ class Author(models.Model):
     Args:
         models (_type_): _description_
     """
-
+    username  = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
     firstname = models.CharField(max_length=100)
     lastname  = models.CharField(max_length=100)
     site_url  = models.URLField(blank=True, null=True)
@@ -70,7 +71,7 @@ class Book(models.Model):
     """
     title       = models.CharField(max_length=200)
     description = models.TextField(blank=True, null=True)
-    author      = models.ManyToManyField(Author, related_name="mes_autheurs")
+    author      = models.ManyToManyField(Author, related_name="mes_auteurs")
     published   = models.DateTimeField(blank=True, null=True)
     created     = models.DateTimeField(auto_now=True)
     price       = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
@@ -80,4 +81,18 @@ class Book(models.Model):
     image_link  = models.URLField(blank=True, null=False)
     isbn_13     = models.CharField(max_length=13,blank=True, null=True)
     buy_link    = models.URLField(blank=True, null=False)
+    
+    def __str__(self) -> str:
+        return self.title
+    
+
+class Blog(models.Model):
+    title = models.CharField(max_length=100)
+    content = models.TextField()
+    created = models.DateField(auto_now_add=True)
+    modified = models.DateTimeField(auto_now=True)
+    authors = models.ManyToManyField(Author)
+    
+    def __str__(self) -> str:
+        return self.title
     
