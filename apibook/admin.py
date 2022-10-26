@@ -15,6 +15,7 @@ class CategoryAdmin(admin.ModelAdmin) :
 class AuthorAdmin(admin.ModelAdmin) :
     list_total  = [ f.name for f in  api_models.Author._meta.get_fields()]
     list_display = list_total
+    list_display = ['id', 'username', 'firstname', 'lastname']
     
 class BookAdmin(admin.ModelAdmin):
     list_total  = [ f.name for f in  api_models.Book._meta.get_fields()]

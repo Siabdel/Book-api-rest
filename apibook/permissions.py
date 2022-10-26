@@ -1,4 +1,5 @@
 from django.http import request 
+from rest_framework import permissions
 
 class BasePermissions(object):
     
@@ -17,4 +18,24 @@ class BasePermissions(object):
         """
         return True
     
+
+class IsAuthorOrReadOnly(BasePermissions):
+    """_summary_
+
+    Args:
+        BasePermissions (_type_): _description_
+    """
+    def has_object_permission(self, request, view, obj):
+        if request.method in permissions.SAFE_METHODS:
+            return True
+
+        for auteur in obj.authors.all():
+            if auteur.username == request.user:
+                return True
+        return False
+    
+
+    def has_permission(self, request, obj):
+        return True
+
     

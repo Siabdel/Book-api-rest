@@ -8,22 +8,8 @@ from apibook import models as api_models
 from rest_framework import permissions
 from apibook.serializers import BookSerializer
 from apibook import serializers as api_json
-from apibook.permissions import BasePermissions
+from apibook.permissions import BasePermissions, IsAuthorOrReadOnly
 
-class IsAuthorOrReadOnly(BasePermissions):
-    """_summary_
-
-    Args:
-        BasePermissions (_type_): _description_
-    """
-    def has_object_permission(self, request, view, obj):
-        if request.method in permissions.SAFE_METHODS:
-            return True
-
-        return request.user in obj.authors.all()
-
-    def has_permission(self, request, obj):
-        return True
 
 class BookList(generics.ListCreateAPIView):
     queryset = api_models.Book.objects.all()

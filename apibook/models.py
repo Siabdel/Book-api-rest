@@ -61,7 +61,7 @@ class Author(models.Model):
         return u'%s %s' % (self.firstname, self.lastname)
 
     def __str__(self):
-        return u'%s %s' % (self.firstname, self.lastname)
+        return u'%s %s' % (self.username, self.lastname)
 
 class Book(models.Model):
     """_summary_
