@@ -19,7 +19,7 @@ class AuthorAdmin(admin.ModelAdmin) :
     
 class BookAdmin(admin.ModelAdmin):
     list_total  = [ f.name for f in  api_models.Book._meta.get_fields()]
-    list_total.remove('author')
+    list_total.remove('authors')
     list_total.remove('categorie')
     list_display = list_total
 

@@ -7,7 +7,7 @@ class BookSerializer(serializers.ModelSerializer):
     class Meta:
         fields = '__all__'
         fields =  [ f.name for f in  api_models.Book._meta.get_fields()]
-        fields.remove('author')
+        fields.remove('authors')
         model  = api_models.Book
         
 class AuteurSerializer(serializers.ModelSerializer):
