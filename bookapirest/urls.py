@@ -15,9 +15,17 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from apibook import models as api_models
+from apibook import views as api_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/v1/', include('apibook.urls')),
     path("api-auth/", include('rest_framework.urls')),
+    path("api/v1/rest-auth/", include('dj_rest_auth.urls')),
+    path('api/v1/rest-auth/registration/', include('dj_rest_auth.registration.urls')),
+    # empty view to fix issues error reverse  password_reset_confirm' not found
+    path('password-reset/<uidb64>/<token>/', 
+         api_views.Empty_view, name='password_reset_confirm'),
+
 ]

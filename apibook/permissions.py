@@ -38,4 +38,22 @@ class IsAuthorOrReadOnly(BasePermissions):
     def has_permission(self, request, obj):
         return True
 
+
+class IsAuthor(BasePermissions):
+    """_summary_
+
+    Args:
+        BasePermissions (_type_): _description_
+    """
+    def has_object_permission(self, request, view, obj):
+
+        for auteur in obj.authors.all():
+            if auteur.username == request.user:
+                return True
+        return False
+    
+
+    def has_permission(self, request, obj):
+        return True
+
     

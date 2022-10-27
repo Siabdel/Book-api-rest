@@ -30,6 +30,7 @@ ALLOWED_HOSTS = []
 
 # Application definition
 
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -39,10 +40,17 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
      # 3rd-party apps
     "rest_framework",  # new
+    "rest_framework.authtoken", #new
     "corsheaders",  # new
+    "allauth",  # new
+    "allauth.account",  # new
+    "allauth.socialaccount",  # new
+    "dj_rest_auth",
+    "dj_rest_auth.registration",  # new
     # Local
     #"accounts.apps.AccountsConfig",  # new
     "apibook.apps.ApibookConfig",  # new
+
 ]
 
 
@@ -137,8 +145,13 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 REST_FRAMEWORK = {  # new
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.IsAuthenticated",
-    ]
+    ],
+    "DEFAULT_AUTHENTICATION_CLASSES": [  # new
+        "rest_framework.authentication.SessionAuthentication",
+        "rest_framework.authentication.TokenAuthentication",  # new
+    ],
 }
+
 
 CORS_ORIGIN_WHITELIST = (
     "http://localhost:3000",
@@ -146,3 +159,8 @@ CORS_ORIGIN_WHITELIST = (
 )
 
 CSRF_TRUSTED_ORIGINS = ["http://localhost:3000"]
+
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"  # new
+
+SITE_ID = 1  # new
+
