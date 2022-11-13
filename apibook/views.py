@@ -161,7 +161,6 @@ class JsonDataSelect(APIView):
         if not d_start :
           d_start='25/11/2022T08:00'
         dd = "{}/{}/{}T08:00".format(d_start[-2:], d_start[4:6], d_start[:4])
-        print(dd) 
         return  dd
 
     

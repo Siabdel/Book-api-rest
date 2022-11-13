@@ -25,7 +25,8 @@ SECRET_KEY = 'Bismi-ALLAH-42gh(t-7zh*3o7#g(e5f=v!0_u=q1-d_zznm4qp75@s#2n4_mc'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '51.178.136.190' ]
+
 
 
 # Application definition
@@ -64,6 +65,10 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+# pour resoudre erreur No 'Access-Control-Allow-Origin' header is
+CORS_ORIGIN_ALLOW_ALL = True
+
 
 ROOT_URLCONF = 'bookapirest.urls'
 
