@@ -120,9 +120,9 @@ def html_to_pdf(request, queryset):
     try :
         #subprocess.call(["firefox", "out/cv_format_%s.html" % cv_id])
         os.system("wkhtmltopdf {} {}".format(html_filename, pdf_filename))
-    except err:
+    except Exception as err:
         messages.success(request, "oups erreur ! %s ... " % err.message)
-    except Exception, err:
+    except Exception as err:
         messages.success(request, "oups erreur ! %s ... " % err.message)
 
     # affichage

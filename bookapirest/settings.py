@@ -68,6 +68,10 @@ MIDDLEWARE = [
 
 # pour resoudre erreur No 'Access-Control-Allow-Origin' header is
 CORS_ORIGIN_ALLOW_ALL = True
+# Add here your frontend URL
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:8000",
+]
 
 
 ROOT_URLCONF = 'bookapirest.urls'

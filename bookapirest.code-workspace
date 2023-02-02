@@ -2,6 +2,9 @@
 	"folders": [
 		{
 			"path": "."
+		},
+		{
+			"path": "../../../Depots/www/Vuejs/SPA/service_dom"
 		}
 	],
 	"settings": {}

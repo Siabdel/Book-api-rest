@@ -158,8 +158,8 @@ class JsonDataSelect(APIView):
     permission_classes = [IsAuthorOrReadOnly, ]
     
     def get_object(self, d_start):
-        if not d_start :
-          d_start='25/11/2022T08:00'
+        # if not d_start :
+        # d_start='25/11/2022T08:00'
         dd = "{}/{}/{}T08:00".format(d_start[-2:], d_start[4:6], d_start[:4])
         return  dd
 
@@ -194,11 +194,40 @@ class JsonDataSelect(APIView):
         # 
         #start   = kwargs.get('start')
         #end   = kwargs.get('end')
+        # Serializing json
+        # json_object = json.dumps(bloc_jours, indent=4)
+        djson = pd.DataFrame(bloc_jours)
+        json_object = djson.to_json(orient='records')
+        
+        with open("/home/django/Depots/www/Vuejs/SPA/service_dom/data2.json", "w") as fd:
+            fd.write(json_object)
         return JsonResponse(bloc_jours, status=200, safe=False)
     
-        
-        
+from datetime import datetime, timedelta
+class TempsQuiPass(APIView):
+    permission_classes = [IsAuthorOrReadOnly, ]
     
+    def get(self, requets, nbjours=1):
+        # Timedelta function demonstration
+        # Using current time
+        ini_time_for_now = datetime.now()
+        
+        # Calculating past dates for nb days
+        past_date_before_nbjour = ini_time_for_now - \
+                            timedelta(days = nbjours)
+        
+        # printing calculated past_dates
+        #print('past_date_before:', str(past_date_before_nbjour.strftime(%d/%m/%Y)))
+        # return 
+
+        date_after_nbjour = past_date_before_nbjour.strftime("%d/%m/%Y")
+        data = {"date_end":date_after_nbjour}
+        json_data = json.loads( data)
+        #
+        return JsonResponse(json_data, status=200, safe=False)
+            
+       
+   
     
     
     
