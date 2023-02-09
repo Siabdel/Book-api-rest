@@ -4,7 +4,10 @@
 			"path": "."
 		},
 		{
-			"path": "../../../Depots/www/Vuejs/SPA/service_dom"
+			"path": "../../../Depots/www/Vuejs/SPA/my-toast_tui_calendar"
+		},
+		{
+			"path": "../../../Depots/www/Vuejs/SPA/carnet_adresses"
 		}
 	],
 	"settings": {}

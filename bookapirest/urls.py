@@ -27,6 +27,9 @@ urlpatterns = [
     # empty view to fix issues error reverse  password_reset_confirm' not found
     path('password-reset/<uidb64>/<token>/', 
          api_views.Empty_view, name='password_reset_confirm'),
-    path("api/v1/dispos/<str:d_start>/", api_views.JsonDataSelect.as_view(),  name="calendar_slot")
+    path("api/v1/dispos/<str:d_start>/", api_views.JsonDataSelect.as_view(),  name="calendar_slot"),
+    path("api/v1/tpass/<int:nbjours>/", api_views.TempsQuiPass.as_view(),  name="temps_qui_pass"),
+    path("api/v1/geocod/<str:city>/<str:country>", api_views.GeoCoding.as_view(),  name="geocod_city"),
+    path("api/v1/prayer_time/", api_views.CalendarPrayer.as_view(),  name="prayer_time"),
 
 ]
