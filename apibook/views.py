@@ -236,6 +236,71 @@ class TempsQuiPass(APIView):
             
        
    
+class ToastUiCalendar(APIView):
+    """_summary_
+
+    Args:
+        APIView (_type_): _description_
+
+    Returns:
+        _type_: _description_
+    """
+    permission_classes = [IsAuthorOrReadOnly, ]
+    
+    def get(self, request, **coordonnees):
+         # Using current time
+        ini_time_for_now = datetime.now()
+        ##Example Request: http://api.aladhan.com/v1/calendar?latitude=51.508515&longitude=-0.1254872&method=2&month=4&year=2017
+        api_url = 'http://api.aladhan.com/v1/calendar?latitude={latitude}&longitude={longitude}&method={method}&month={month}&year={year}'\
+            .format(**data)
+        
+        print("API url=", api_url) 
+        ## construire struct 
+        data_schedules = [
+            {
+              "id": "1",
+              "title": "Test ok my schedule from DRF",
+              "category": "time",
+              "start": "2023-02-09T12:30:00+09:00",
+              "end": "2023-02-09T14:30:00+09:00",
+              "isPending": False,
+              "raw": { "id": "111", "whatisit": "raw option contains user datas" },
+              "customStyle": "scheduleTeste",
+              "bgColor": "red",
+              "color": "white",
+              "body": "body texte",
+              "location": "home/garden",
+              "attendees": ["User A", "User B"],
+            },
+            {
+              "id": "2",
+              "title": "my schedule 2 From DRF *",
+              "category": "time",
+              "start": "2023-02-09T12:30:00+09:00",
+              "end": "2023-02-09T13:30:00+09:00",
+              "bgColor": "red",
+              "dragBgColor": "red",
+              "borderColor": "black",
+              "color": "white",
+            },
+            ]
+        #today = datetime.utcnow()
+        #today = datetime.now(tz=pytz.UTC)
+        today = datetime.now(tz=pytz.timezone("Europe/Paris"))
+        str_today = today.strftime("%Y-%m-%dT%H:%M:%S")
+        ## Reponses
+        response = requests.get(api_url, 
+                                headers={'X-Api-Key': 'YOUR_API_KEY',
+                                         'Accept': 'image/jpg'}, stream=True)
+        if response.status_code == requests.codes.ok:
+            json_data = json.loads(response.text)
+            #
+            return JsonResponse(data_schedules, status=200, safe=False)
+        else :
+            return JsonResponse(data, status=400, safe=False)
+            
+       
+
 class CalendarPrayer(APIView):
     """
     ## Parameters:
@@ -317,22 +382,13 @@ class CalendarPrayer(APIView):
         
         print("API url=", api_url) 
         ## construire struct 
-        slot_calendar = {
-              "id": "2",
-              "title": "my schedule 2",
-              "category": "time",
-              "start": "2023-02-08T22:30:00+09:00",
-              "end": "2023-02-20T22:30:00+09:00",
-              "bgColor": "red",
-              "dragBgColor": "red",
-              "borderColor": "black",
-              "color": "white",
-            }
         data_prayer = []
         #today = datetime.utcnow()
         #today = datetime.now(tz=pytz.UTC)
         today = datetime.now(tz=pytz.timezone("Europe/Paris"))
         str_today = today.strftime("%Y-%m-%dT%H:%M:%S")
+        start = datetime(today.year, today.month, today.day, 12, 30) 
+        str_today = start.strftime("%Y-%m-%dT%H:%M:%S")
         ## Reponses
         response = requests.get(api_url, 
                                 headers={'X-Api-Key': 'YOUR_API_KEY',
@@ -340,65 +396,8 @@ class CalendarPrayer(APIView):
         if response.status_code == requests.codes.ok:
             json_data = json.loads(response.text)
             #
-            for (index, slot) in enumerate(json_data["data"]):
-                ## {"Fajr": "06:55 (CET)", "Sunrise": "08:03 (CET)", "Dhuhr": "12:54 (CET)", "Asr": "15:22 (CET)", "Sunset": "17:46 (CET)", "Maghrib": "17:46 (CET)", "Isha": "18:53 (CET)", "Imsak": "06:45 (CET)", "Midnight": "00:54 (CET)", "Firstthird": "22:32 (CET)", "Lastthird": "03:17 (CET)"}
-                for (ind, salate) in enumerate(['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha']):
-                    slot_calendar = {
-                        "id": "",
-                        "title": "my schedule 2",
-                        "category": "time",
-                        "bgColor": "red",
-                        "dragBgColor": "red",
-                        "borderColor": "black",
-                        "color": "white",
-                    }
-                    slot_calendar.update({"id" : ind})
-                    slot_calendar.update({"title" : salate})
-                    # 
-                    h_start = slot["timings"][salate]
-                    h_start = h_start.strip("(CET)")
-                    h_start = h_start.split(":")
-                    start = datetime(today.year, today.month, today.day, 
-                                    int(h_start[0]), int(h_start[1]) )
-                    
-                    str_today = start.strftime("%Y-%m-%dT%H:%M:%S")
-                    
-                    slot_calendar.update({"start": str_today}) 
-                    slot_calendar.update({"end": str_today })
-                    # add slot to list
-                    data_prayer.append(slot_calendar)
-                    #print("h_start", data_prayer)
-                break
-            data_prayer=[
-            {
-              "id": "1",
-              "title": "Test ok my schedule from DRF",
-              "category": "time",
-              "start": "2023-02-09T12:30:00+09:00",
-              "end": "2023-02-09T14:30:00+09:00",
-              "isPending": False,
-              "raw": { "id": "111", "whatisit": "raw option contains user datas" },
-              "customStyle": "scheduleTeste",
-              "bgColor": "red",
-              "color": "white",
-              "body": "body texte",
-              "location": "home/garden",
-              "attendees": ["User A", "User B"],
-            },
-            {
-              "id": "2",
-              "title": "my schedule 2 From DRF *",
-              "category": "time",
-              "start": "2023-02-09T12:30:00+09:00",
-              "end": "2023-02-09T13:30:00+09:00",
-              "bgColor": "red",
-              "dragBgColor": "red",
-              "borderColor": "black",
-              "color": "white",
-            },
-            ]
-            # return JsonResponse(json_data["data"][0]["timings"], status=200, safe=False)
-            return JsonResponse(data_prayer, status=200, safe=False)
+            ## {"Fajr": "06:55 (CET)", "Sunrise": "08:03 (CET)", "Dhuhr": "12:54 (CET)", "Asr": "15:22 (CET)", "Sunset": "17:46 (CET)", "Maghrib": "17:46 (CET)", "Isha": "18:53 (CET)", "Imsak": "06:45 (CET)", "Midnight": "00:54 (CET)", "Firstthird": "22:32 (CET)", "Lastthird": "03:17 (CET)"}
+            return JsonResponse(json_data["data"], status=200, safe=False)
         else :
             return JsonResponse(data, status=400, safe=False)
             

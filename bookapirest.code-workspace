@@ -8,6 +8,9 @@
 		},
 		{
 			"path": "../../../Depots/www/Vuejs/SPA/carnet_adresses"
+		},
+		{
+			"path": "../../../Depots/www/Vuejs/SPA/my_time_prayer"
 		}
 	],
 	"settings": {}
