@@ -322,7 +322,7 @@ class CalendarPrayer(APIView):
     "method" (number) 
     method" (number) -
     A prayer times calculation method. Methods identify various schools of thought about how to compute the timings. If not specified, it defaults to the closest authority based on the location or co-ordinates specified in the API call. This parameter accepts values from 0-12 and 99, as specified below:
-    * 0 - Shia Ithna-Ansari
+    0 - Shia Ithna-Ansari
     1 - University of Islamic Sciences, Karachi
     2 - Islamic Society of North America
     3 - Muslim World League
@@ -367,18 +367,41 @@ class CalendarPrayer(APIView):
     def get(self, request, **coordonnees):
          # Using current time
         ini_time_for_now = datetime.now()
-        data = {
+        #
+        method = {0 : "Shia Ithna-Ansari",
+                  1 : "University of Islamic Sciences, Karachi",
+                  2 : "Islamic Society of North America",
+                  3 : "Muslim World League",
+                  4 : "Umm Al-Qura University, Makkah",
+                  5 : "Egyptian General Authority of Survey:",
+                  12 : "Union Organization islamic de France",
+                  15 : "Moonsighting Committee Worldwide (also requires shafaq paramteer)",
+                  99 : "Custom. See https://aladhan.com/calculation-methods"
+        }
+    
+        ## la semaine
+        week = {1: 'Monday', 2: 'Tuesday', 3: 'Wednesday', 4: 'Thursday', 5: 'Friday', 6 : 'saturday'}
+        semaine = { 1: "lundi", 2: "mardi", 3:"mercredi", 4: "jeudi", 5: "vendredi", 6: "samedi", 7: "dimanche"
+}
+        ## month dict
+        month_dict = {1: 'January', 2: 'February', 3: 'March', 4: 'April', 5: 'May', 6: 'June', 7: 'July', 
+                       8: 'August', 9: 'September', 10: 'October', 11:'November', 
+                       12 : 'December'}
+        mois = { 1: "janvier", 2: "fevrier", 3: "mars", 4: "avril", 5: "mai", 6: "juin", 
+                 7: "juillet", 8: "aout", 9: "septembre", 10: "octobre", 11: "novembre", 12: "decembre"
+}
+        data_in = {
             'country':'France',
-            'city':'Venissieux',
-            'latitude':45.6977109,
-            'longitude':4.8855966,
+            'city':'Lyon',
+            'latitude':45.7578137, 
+            "longitude": 4.8320114,
             'method':12,
             'month':2,
             'year':2023,
         }
         ##Example Request: http://api.aladhan.com/v1/calendar?latitude=51.508515&longitude=-0.1254872&method=2&month=4&year=2017
         api_url = 'http://api.aladhan.com/v1/calendar?latitude={latitude}&longitude={longitude}&method={method}&month={month}&year={year}'\
-            .format(**data)
+            .format(**data_in)
         
         print("API url=", api_url) 
         ## construire struct 
@@ -394,12 +417,18 @@ class CalendarPrayer(APIView):
                                 headers={'X-Api-Key': 'YOUR_API_KEY',
                                          'Accept': 'image/jpg'}, stream=True)
         if response.status_code == requests.codes.ok:
-            json_data = json.loads(response.text)
+            data = json.loads(response.text)
+            json_data = {}
+            data_in.update( {'method': method[data_in['method']]} )
+            data_in.update( {'month':mois[data_in['month']]})
+            json_data["settings"] = data_in
+            json_data["today"] = data["data"][today.day - 1]
+            json_data["data"] = data["data"]
             #
             ## {"Fajr": "06:55 (CET)", "Sunrise": "08:03 (CET)", "Dhuhr": "12:54 (CET)", "Asr": "15:22 (CET)", "Sunset": "17:46 (CET)", "Maghrib": "17:46 (CET)", "Isha": "18:53 (CET)", "Imsak": "06:45 (CET)", "Midnight": "00:54 (CET)", "Firstthird": "22:32 (CET)", "Lastthird": "03:17 (CET)"}
-            return JsonResponse(json_data["data"], status=200, safe=False)
+            return JsonResponse(json_data, status=200, safe=False)
         else :
-            return JsonResponse(data, status=400, safe=False)
+            return JsonResponse(data_in, status=400, safe=False)
             
        
  
