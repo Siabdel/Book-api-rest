@@ -18,6 +18,8 @@ import csv
 from datetime import datetime, timedelta
 import requests
 import shutil
+from rest_framework.response import Response
+from rest_framework import status
 
 
 # Create your views here.
@@ -30,11 +32,49 @@ from rest_framework import permissions
 from apibook.serializers import BookSerializer
 from apibook import serializers as api_json
 from apibook.permissions import BasePermissions, IsAuthorOrReadOnly, IsAuthor
-
+from rest_framework.permissions import IsAuthenticated, AllowAny  # NOQA
+ 
 # Empty view
 
 def Empty_view(request):
         return render('')
+
+## dict to object.
+class Dictate(object):
+    """Object view of a dict, updating the passed in dict when values are set
+    or deleted. "Dictate" the contents of a dict...: 
+    """
+    def __init__(self, dd):
+        # since __setattr__ is overridden, self.__dict = d doesn't work
+        object.__setattr__(self, '_Dictate__dict', dd)
+
+    # Dictionary-like access / updates
+    def __getitem__(self, name):
+        value = self.__dict[name]
+        if isinstance(value, dict):  # recursively view sub-dicts as objects
+            value = Dictate(value)
+        return value
+
+    def __setitem__(self, name, value):
+        self.__dict[name] = value
+    def __delitem__(self, name):
+        del self.__dict[name]
+
+    # Object-like access / updates
+    def __getattr__(self, name):
+        return self[name]
+
+    def __setattr__(self, name, value):
+        self[name] = value
+    def __delattr__(self, name):
+        del self[name]
+
+    def __repr__(self):
+        return "%s(%r)" % (type(self).__name__, self.__dict)
+    def __str__(self):
+        return str(self.__dict)
+
+
 
 
 class JsonResponseMixin(object):
@@ -234,8 +274,23 @@ class TempsQuiPass(APIView):
         #
         return JsonResponse(data, status=200, safe=False)
             
-       
-   
+class RandomImage(APIView):
+    """_summary_
+
+    Args:
+        APIView (_type_): _description_
+    """
+    def get(self, request):
+        category = 'nature'
+        api_url = 'https://api.api-ninjas.com/v1/randomimage?category={}'\
+            .format(category)
+        response = requests.get(api_url, headers={'X-Api-Key': 'YOUR_API_KEY', 'Accept': 'image/jpg'}, stream=True)
+        if response.status_code == requests.codes.ok:
+            with open('img.jpg', 'wb') as out_file:
+                shutil.copyfileobj(response.raw, out_file)
+        else:
+            print("Error:", response.status_code, response.text)
+
 class ToastUiCalendar(APIView):
     """_summary_
 
@@ -250,6 +305,15 @@ class ToastUiCalendar(APIView):
     def get(self, request, **coordonnees):
          # Using current time
         ini_time_for_now = datetime.now()
+        data = {
+            'country':'France',
+            'city':'Lyon',
+            'latitude':45.7578137, 
+            "longitude": 4.8320114,
+            'method':12,
+            'month':2,
+            'year':2023,
+        }
         ##Example Request: http://api.aladhan.com/v1/calendar?latitude=51.508515&longitude=-0.1254872&method=2&month=4&year=2017
         api_url = 'http://api.aladhan.com/v1/calendar?latitude={latitude}&longitude={longitude}&method={method}&month={month}&year={year}'\
             .format(**data)
@@ -368,7 +432,7 @@ class CalendarPrayer(APIView):
          # Using current time
         ini_time_for_now = datetime.now()
         #
-        method = {0 : "Shia Ithna-Ansari",
+        methods = {0 : "Shia Ithna-Ansari",
                   1 : "University of Islamic Sciences, Karachi",
                   2 : "Islamic Society of North America",
                   3 : "Muslim World League",
@@ -382,14 +446,15 @@ class CalendarPrayer(APIView):
         ## la semaine
         week = {1: 'Monday', 2: 'Tuesday', 3: 'Wednesday', 4: 'Thursday', 5: 'Friday', 6 : 'saturday'}
         semaine = { 1: "lundi", 2: "mardi", 3:"mercredi", 4: "jeudi", 5: "vendredi", 6: "samedi", 7: "dimanche"
-}
+                    }
         ## month dict
         month_dict = {1: 'January', 2: 'February', 3: 'March', 4: 'April', 5: 'May', 6: 'June', 7: 'July', 
                        8: 'August', 9: 'September', 10: 'October', 11:'November', 
                        12 : 'December'}
         mois = { 1: "janvier", 2: "fevrier", 3: "mars", 4: "avril", 5: "mai", 6: "juin", 
                  7: "juillet", 8: "aout", 9: "septembre", 10: "octobre", 11: "novembre", 12: "decembre"
-}
+                }
+        ## get city : (latitude, longitude ) 
         data_in = {
             'country':'France',
             'city':'Lyon',
@@ -419,10 +484,11 @@ class CalendarPrayer(APIView):
         if response.status_code == requests.codes.ok:
             data = json.loads(response.text)
             json_data = {}
-            data_in.update( {'method': method[data_in['method']]} )
+            data_in.update( {'method': methods[data_in['method']]} )
             data_in.update( {'month':mois[data_in['month']]})
             json_data["settings"] = data_in
             json_data["today"] = data["data"][today.day - 1]
+            #json_data["today"] = str_today
             json_data["data"] = data["data"]
             #
             ## {"Fajr": "06:55 (CET)", "Sunrise": "08:03 (CET)", "Dhuhr": "12:54 (CET)", "Asr": "15:22 (CET)", "Sunset": "17:46 (CET)", "Maghrib": "17:46 (CET)", "Isha": "18:53 (CET)", "Imsak": "06:45 (CET)", "Midnight": "00:54 (CET)", "Firstthird": "22:32 (CET)", "Lastthird": "03:17 (CET)"}
@@ -444,30 +510,58 @@ class GeoCoding(APIView):
         #city = 'London'
         #country = 'Fr'
         MY_API_KEY = 'HLaK0UU0DqinZkPLVtNO3Q==zNy0SVxmVjHyqKSa'
-        api_url = 'https://api.api-ninjas.com/v1/geocoding?city={}&country={}'\
-            .format(city, country)
+        api_url = 'https://api.api-ninjas.com/v1/city?name={}'.format(city)
+        # https://api.api-ninjas.com/v1/city
         print("API urm =",api_url)
         response = requests.get(api_url, headers={'X-Api-Key': MY_API_KEY })
         if response.status_code == requests.codes.ok:
             json_data = json.loads(response.text)
-            return JsonResponse(json_data[0], status=200, safe=False) 
+            return JsonResponse(json_data, status=200, safe=False) 
         else:
-            return JsonResponse({}, status=400, safe=false)
+            return JsonResponse({}, status=400, safe=False)
 
 
-class RandomImage(APIView):
-    """_summary_
+    def post(self, request, format=None):
+        # serializer = MemberSerializer(data=request.data)
+        #
+        json_data = {}
+        # json_data = json.loads(request.data)
+        # json_data = request.data
+        print("request.data = ", json_data)
+        #return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return JsonResponse(json_data, status=200, safe=False)
+   
 
-    Args:
-        APIView (_type_): _description_
-    """
-    def get(self, request):
-        category = 'nature'
-        api_url = 'https://api.api-ninjas.com/v1/randomimage?category={}'\
-            .format(category)
-        response = requests.get(api_url, headers={'X-Api-Key': 'YOUR_API_KEY', 'Accept': 'image/jpg'}, stream=True)
-        if response.status_code == requests.codes.ok:
-            with open('img.jpg', 'wb') as out_file:
-                shutil.copyfileobj(response.raw, out_file)
-        else:
-            print("Error:", response.status_code, response.text)
+class ParamTimePrayer(APIView):
+    queryset = api_models.ParamTimerPrayer.objects.all()
+    serializer_class = api_json.ParamTimePrayerSerializer
+    permission_classes = (AllowAny, )
+    http_method_names = ['post', 'get',]
+
+
+
+    
+    def post(self, request, format=None):
+        # serializer = api_json.ParamTimePrayerSerializer(data=request.data)
+        ## print("requets.data : ", request.POST)
+        cc = JsonResponseMixin()
+        data = dict(request.data)
+        # create obj from dict
+        data_obj = Dictate(data)
+        ##
+        json_data = {
+            'ville' :  data_obj.geocods.name,
+            'pays' :  data_obj.geocods.country, 
+            'population' : data_obj.geocods.population,
+            'methode' : data_obj.method_selected,
+            'longitude': data_obj.geocods.longitude,
+            'latitude' : data_obj.geocods.latitude, 
+        }
+        ## update or create
+        try :
+            bb, msg_retour = api_models.ParamTimerPrayer.objects.update_or_create(**json_data)
+            ## print("retour update_create : ", bb, msg_retour)
+            return Response(data, status=status.HTTP_201_CREATED)
+        except Exception as err :
+            return Response("error update", status=status.HTTP_400_BAD_REQUEST)
+

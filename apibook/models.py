@@ -95,4 +95,18 @@ class Blog(models.Model):
     
     def __str__(self) -> str:
         return self.title
-    
+
+class ParamTimerPrayer(models.Model):
+    ville  = models.CharField(max_length=100) 
+    pays   = models.CharField(max_length=100) 
+    population = models.IntegerField(blank=True, null=True)
+    methode  = models.CharField(max_length=100) 
+    longitude = models.DecimalField(max_digits=5, decimal_places=3)
+    latitude  = models.DecimalField(max_digits=5, decimal_places=3)
+
+    class Meta:
+        ordering = ["ville", ]
+        unique_together = ["ville", ]
+   
+    def __str__(self):
+        return "{}".format(self.ville)

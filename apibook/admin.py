@@ -26,9 +26,14 @@ class BookAdmin(admin.ModelAdmin):
 class BlogAdmin(admin.ModelAdmin):
     list_total  = [ f.name for f in  api_models.Blog._meta.get_fields()]
     #list_total.remove('author')
+class ParamTimePrayerAdmin(admin.ModelAdmin):
+    list_total  = [ f.name for f in  api_models.ParamTimerPrayer._meta.get_fields()]
+    #list_total.remove('author')
+  
     
     
 admin.site.register(api_models.Author, AuthorAdmin)
 admin.site.register(api_models.Category, CategoryAdmin)
 admin.site.register(api_models.Book, BookAdmin)
 admin.site.register(api_models.Blog, BlogAdmin)
+admin.site.register(api_models.ParamTimerPrayer, ParamTimePrayerAdmin)

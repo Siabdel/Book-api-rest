@@ -7,10 +7,10 @@
 			"path": "../../../Depots/www/Vuejs/SPA/my-toast_tui_calendar"
 		},
 		{
-			"path": "../../../Depots/www/Vuejs/SPA/carnet_adresses"
+			"path": "../../../Depots/www/Vuejs/SPA/my_time_prayer"
 		},
 		{
-			"path": "../../../Depots/www/Vuejs/SPA/my_time_prayer"
+			"path": "../atlassbookapi/apibankpro"
 		}
 	],
 	"settings": {}

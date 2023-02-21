@@ -26,4 +26,8 @@ class BlogSerializer(serializers.ModelSerializer):
         fields = '__all__'
         model = api_models.Blog
         
-        
+class ParamTimePrayerSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields = '__all__'
+        model = api_models.ParamTimerPrayer
+  

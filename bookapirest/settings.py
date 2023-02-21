@@ -154,17 +154,19 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 REST_FRAMEWORK = {  # new
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.IsAuthenticated",
+        ## 'rest_framework.permissions.IsAdminUser'
     ],
     "DEFAULT_AUTHENTICATION_CLASSES": [  # new
+        #"rest_framework.authentication.BasicAuthentication",  # enables simple command line authentication
         "rest_framework.authentication.SessionAuthentication",
-        "rest_framework.authentication.TokenAuthentication",  # new
+        #"rest_framework.authentication.TokenAuthentication",  # new
     ],
 }
-
 
 CORS_ORIGIN_WHITELIST = (
     "http://localhost:3000",
     "http://localhost:8000",
+    "http://localhost:8080",
 )
 
 CSRF_TRUSTED_ORIGINS = ["http://localhost:3000"]
